@@ -26,17 +26,17 @@ public class CountryController {
         return ResponseEntity.ok(countryService.getCountryById(id));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<CountryDTO.Response> createCountry(@Valid @RequestBody CountryDTO.Request request) {
         return new ResponseEntity<>(countryService.createCountry(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<CountryDTO.Response> updateCountry(@PathVariable Long id, @Valid @RequestBody CountryDTO.Request request) {
         return ResponseEntity.ok(countryService.updateCountry(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCountry(@PathVariable Long id) {
         countryService.deleteCountry(id);
         return ResponseEntity.noContent().build();

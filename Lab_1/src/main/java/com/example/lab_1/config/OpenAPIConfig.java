@@ -9,10 +9,9 @@ import org.springframework.context.annotation.Configuration;
 public class OpenAPIConfig {
     @Bean
     public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title("Accommodation Rental API")
-                        .version("1.0")
-                        .description("API for managing accommodations, hosts, and countries"));
+        return new OpenAPI().info(new Info()
+                .title("Accommodation Rental API")
+                .version("1.0")
+                .description("API for managing accommodations, hosts, and countries"));
     }
 }

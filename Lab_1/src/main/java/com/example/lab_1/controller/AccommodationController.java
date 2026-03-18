@@ -26,23 +26,23 @@ public class AccommodationController {
         return ResponseEntity.ok(accommodationService.getAccommodationById(id));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<AccommodationDTO.Response> createAccommodation(@Valid @RequestBody AccommodationDTO.Request request) {
         return new ResponseEntity<>(accommodationService.createAccommodation(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<AccommodationDTO.Response> updateAccommodation(@PathVariable Long id, @Valid @RequestBody AccommodationDTO.Request request) {
         return ResponseEntity.ok(accommodationService.updateAccommodation(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteAccommodation(@PathVariable Long id) {
         accommodationService.deleteAccommodation(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/rent")
+    @PatchMapping("/rent/{id}")
     public ResponseEntity<AccommodationDTO.Response> markAsRented(@PathVariable Long id) {
         return ResponseEntity.ok(accommodationService.markAsRented(id));
     }

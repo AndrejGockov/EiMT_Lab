@@ -2,8 +2,8 @@ package com.example.lab_1.service;
 
 import com.example.lab_1.model.domain.Country;
 import com.example.lab_1.model.domain.Host;
-import com.example.lab_1.model.dto.CountryDTO;
-import com.example.lab_1.model.dto.HostDTO;
+import com.example.lab_1.model.dto.*;
+import com.example.lab_1.model.enums.Condition;
 import com.example.lab_1.model.exceptions.ResourceNotFoundException;
 import com.example.lab_1.repository.CountryRepository;
 import com.example.lab_1.repository.HostRepository;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class HostService {
     private final HostRepository hostRepository;
     private final CountryRepository countryRepository;
-    private final CountryService countryService; // to reuse mapping
+    private final CountryService countryService;
 
     public List<HostDTO.Response> getAllHosts() {
         return hostRepository.findAll().stream()
@@ -30,6 +30,30 @@ public class HostService {
         Host host = hostRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Host not found with id: " + id));
         return mapToResponse(host);
+    }
+
+
+    public HostStatsDTO.Response getHostStats(Long id, List<AccommodationDTO.Response> accomodations) {
+        Host host = hostRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Host not found with id: " + id));
+
+        int totalRooms = accomodations.stream().mapToInt(a -> a.getNumRooms()).sum();
+        int rentedRooms = (int)accomodations.stream().filter(a -> a.getRented()).count();
+        int goodRooms = (int)accomodations.stream().filter(a -> a.getCondition().equals(Condition.GOOD)).count();
+        int badRooms = (int)accomodations.stream().filter(a -> a.getCondition().equals(Condition.BAD)).count();
+        ConditionDTO.Response condition = new ConditionDTO.Response();
+        condition.setGoodRooms(goodRooms);
+        condition.setBadRooms(badRooms);
+
+        HostStatsDTO.Response response = new HostStatsDTO.Response();
+        response.setId(host.getId());
+        response.setName(host.getName());
+        response.setSurname(host.getSurname());
+        response.setTotalRooms(totalRooms);
+        response.setTotalRentedRooms(rentedRooms);
+        response.setCondition(condition);
+
+        return response;
     }
 
     public HostDTO.Response createHost(HostDTO.Request request) {
@@ -75,3 +99,4 @@ public class HostService {
         return response;
     }
 }
+

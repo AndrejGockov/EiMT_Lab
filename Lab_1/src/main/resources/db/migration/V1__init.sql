@@ -13,7 +13,7 @@ CREATE TABLE host
     name       VARCHAR(100) NOT NULL,
     surname    VARCHAR(100) NOT NULL,
     country_id BIGINT       NOT NULL,
-    CONSTRAINT fk_host_country FOREIGN KEY (country_id) REFERENCES country (id)
+    CONSTRAINT fk_host_country FOREIGN KEY (country_id) REFERENCES country (id) ON DELETE CASCADE
 );
 
 CREATE TABLE accommodation
@@ -27,5 +27,5 @@ CREATE TABLE accommodation
     rented     BOOLEAN      NOT NULL DEFAULT FALSE,
     num_rooms  INTEGER      NOT NULL,
     host_id    BIGINT       NOT NULL,
-    CONSTRAINT fk_accommodation_host FOREIGN KEY (host_id) REFERENCES host (id)
+    CONSTRAINT fk_accommodation_host FOREIGN KEY (host_id) REFERENCES host (id) ON DELETE CASCADE
 );

@@ -1,6 +1,9 @@
 package com.example.lab_1.controller;
 
+import com.example.lab_1.model.dto.AccommodationDTO;
 import com.example.lab_1.model.dto.HostDTO;
+import com.example.lab_1.model.dto.HostStatsDTO;
+import com.example.lab_1.service.AccommodationService;
 import com.example.lab_1.service.HostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,28 +18,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HostController {
     private final HostService hostService;
+    private final AccommodationService accommodationService;
 
-    // GET all hosts
     @GetMapping
     public List<HostDTO.Response> getAllHosts() {
         return hostService.getAllHosts();
     }
 
-    // GET host by ID
     @GetMapping("/{id}")
     public ResponseEntity<HostDTO.Response> getHostById(@PathVariable Long id) {
         return ResponseEntity.ok(hostService.getHostById(id));
     }
 
-    // POST create new host
-    @PostMapping
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<HostStatsDTO.Response> getHostStats(@PathVariable Long id) {
+        List<AccommodationDTO.Response> hosts = accommodationService.getAllAccommodations().stream()
+                .filter(a -> a.getHost().getId().equals(id)).toList();
+
+        return ResponseEntity.ok(hostService.getHostStats(id, hosts));
+    }
+
+    @PostMapping("/add")
     public ResponseEntity<HostDTO.Response> createHost(@Valid @RequestBody HostDTO.Request request) {
         HostDTO.Response created = hostService.createHost(request);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    // PUT update existing host
-    @PutMapping("/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<HostDTO.Response> updateHost(
             @PathVariable Long id,
             @Valid @RequestBody HostDTO.Request request) {
@@ -44,8 +52,7 @@ public class HostController {
         return ResponseEntity.ok(updated);
     }
 
-    // DELETE host
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
         hostService.deleteHost(id);
         return ResponseEntity.noContent().build();
