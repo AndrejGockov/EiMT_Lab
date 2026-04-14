@@ -1,12 +1,20 @@
 package com.example.lab_1.controller;
 
 import com.example.lab_1.model.dto.AccommodationDTO;
+import com.example.lab_1.model.enums.Category;
 import com.example.lab_1.service.AccommodationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -24,6 +32,27 @@ public class AccommodationController {
     @GetMapping("/{id}")
     public ResponseEntity<AccommodationDTO.Response> getAccommodationById(@PathVariable Long id) {
         return ResponseEntity.ok(accommodationService.getAccommodationById(id));
+    }
+
+    @GetMapping("/results")
+    public List<AccommodationDTO.Response> searchAccomodation(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "asc,asc") String sortNameDate,
+            @RequestParam(required = false, defaultValue = "/") String category,
+            @RequestParam(required = false, defaultValue = "/") String hostCountry,
+            @RequestParam(required = false, defaultValue = "-1") int numberOfRooms,
+            @RequestParam(required = false, defaultValue = "false") boolean hasRooms
+    ) {
+        return accommodationService.searchAccommodations(page, size, sortNameDate, category, hostCountry, numberOfRooms, hasRooms);
+    }
+
+    private Sort parseSort(String sort) {
+        String[] parts = sort.split(",");
+        String field = parts[0];
+        Sort.Direction direction = (parts.length > 1 && parts[1].equalsIgnoreCase("desc"))
+                ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return Sort.by(direction, field);
     }
 
     @PostMapping("/add")

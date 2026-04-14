@@ -1,0 +1,23 @@
+//        if(hasRooms) {
+//            accommodations = accommodations.stream()
+//                    .filter(accommodation -> accommodation.getRented() == false)
+//                    .collect(Collectors.toList());
+//        }
+
+//        if(numberOfRooms != -1){
+//            accommodations = accommodations.stream()
+//                    .filter(accommodation -> accommodation.getNumRooms() == numberOfRooms)
+//                    .collect(Collectors.toList());
+//        }
+
+//        if(!hostCountry.equals("/")) {
+//            accommodations = accommodations.stream()
+//                    .filter(accommodation -> accommodation.getHost().getCountry().getName().equals(hostCountry))
+//                    .collect(Collectors.toList());
+//        }
+
+//        if(!category.equals("/")){
+//            accommodations = accommodations.stream()
+//                    .filter(accommodation -> accommodation.getCategory().name().toLowerCase().equals(category.toLowerCase()))
+//                    .collect(Collectors.toList());
+//        }

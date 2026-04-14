@@ -1,22 +1,10 @@
 package com.example.lab_1.model.dto;
 
+import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 public class HostStatsDTO {
-    @Data
-    public static class Request {
-        @NotBlank(message = "Host name is required")
-        private String name;
-
-        @NotBlank(message = "Host surname is required")
-        private String surname;
-
-        @NotNull(message = "Country ID is required")
-        private Long countryId;
-    }
-
     @Data
     public static class Response {
         private Long id;

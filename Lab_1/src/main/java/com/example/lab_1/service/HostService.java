@@ -37,8 +37,8 @@ public class HostService {
         Host host = hostRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Host not found with id: " + id));
 
-        int totalRooms = accomodations.stream().mapToInt(a -> a.getNumRooms()).sum();
-        int rentedRooms = (int)accomodations.stream().filter(a -> a.getRented()).count();
+        int totalRooms = accomodations.stream().mapToInt(AccommodationDTO.Response::getNumRooms).sum();
+        int rentedRooms = (int)accomodations.stream().filter(AccommodationDTO.Response::getRented).count();
         int goodRooms = (int)accomodations.stream().filter(a -> a.getCondition().equals(Condition.GOOD)).count();
         int badRooms = (int)accomodations.stream().filter(a -> a.getCondition().equals(Condition.BAD)).count();
         ConditionDTO.Response condition = new ConditionDTO.Response();
