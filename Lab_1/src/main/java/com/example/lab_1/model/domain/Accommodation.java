@@ -53,25 +53,31 @@ public class Accommodation {
     @Column(name = "num_rooms", nullable = false)
     private Integer numRooms;
 
+    // When accommodation starts with work
+    @Column(name = "work_start_date")
+    private LocalDateTime workStartDate;
+
     @ManyToOne
     @JoinColumn(name = "host_id", nullable = false)
     private Host host;
 
-    public Accommodation(String name, Category category, Host host, Condition condition, Integer numRooms) {
+    public Accommodation(String name, Category category, Host host, Condition condition, Integer numRooms, LocalDateTime workStartDate) {
         this.name = name;
         this.category = category;
         this.host = host;
         this.condition = condition;
         this.numRooms = numRooms;
         this.rented = false;
+        this.workStartDate = workStartDate;
     }
 
-    public Accommodation(String name, Category category, Host host, Condition condition, Integer numRooms, Boolean rented) {
+    public Accommodation(String name, Category category, Host host, Condition condition, Integer numRooms, Boolean rented, LocalDateTime workStartDate) {
         this.name = name;
         this.category = category;
         this.host = host;
         this.condition = condition;
         this.numRooms = numRooms;
         this.rented = rented;
+        this.workStartDate = workStartDate;
     }
 }

@@ -40,5 +40,6 @@ public class AccommodationDTO {
         private HostDTO.Response host;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private LocalDateTime workStartDate;
     }
 }

@@ -61,6 +61,12 @@ public class AccommodationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // Latest 10 accommodations
+    @GetMapping("/latest")
+    public List<AccommodationDTO.Response> detailedProjectionResponseEntity() {
+        return accommodationService.latestAccommodations();
+    }
+
     @PostMapping("/add")
     public ResponseEntity<AccommodationDTO.Response> createAccommodation(@Valid @RequestBody AccommodationDTO.Request request) {
         return new ResponseEntity<>(accommodationService.createAccommodation(request), HttpStatus.CREATED);

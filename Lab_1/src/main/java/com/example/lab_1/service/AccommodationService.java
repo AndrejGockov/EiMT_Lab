@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,6 +82,15 @@ public class AccommodationService {
         return accommodations;
     }
 
+    // Lab 3 latest 10 accommodations that started working
+    public List<AccommodationDTO.Response> latestAccommodations() {
+        return getAllAccommodations().stream()
+                .filter(dto -> dto != null && dto.getWorkStartDate() != null)
+                .sorted(Comparator.comparing(AccommodationDTO.Response::getWorkStartDate).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+
     public AccommodationDTO.Response getAccommodationById(Long id) {
         Accommodation accommodation = accommodationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Accommodation not found with id: " + id));
@@ -133,6 +143,7 @@ public class AccommodationService {
         response.setNumRooms(accommodation.getNumRooms());
         response.setCreatedAt(accommodation.getCreatedAt());
         response.setUpdatedAt(accommodation.getUpdatedAt());
+        response.setWorkStartDate(accommodation.getWorkStartDate());
         // Map host
         HostDTO.Response hostResponse = hostService.mapToResponse(accommodation.getHost());
         response.setHost(hostResponse);
