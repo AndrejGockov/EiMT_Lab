@@ -1,5 +1,7 @@
 package com.example.lab_1.service;
 
+import com.example.lab_1.events.AccommodationFullyBookedEvent;
+import com.example.lab_1.events.AccommodationRentedEvent;
 import com.example.lab_1.model.domain.Accommodation;
 import com.example.lab_1.model.domain.Host;
 import com.example.lab_1.model.dto.AccommodationDTO;
@@ -8,9 +10,10 @@ import com.example.lab_1.model.enums.Category;
 import com.example.lab_1.model.exceptions.ResourceNotFoundException;
 import com.example.lab_1.repository.AccommodationRepository;
 import com.example.lab_1.repository.HostRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,6 +26,7 @@ public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
     private final HostRepository hostRepository;
     private final HostService hostService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<AccommodationDTO.Response> getAllAccommodations() {
         return accommodationRepository.findAll().stream()
@@ -36,20 +40,16 @@ public class AccommodationService {
         List<AccommodationDTO.Response> accommodations = accommodationRepository.findAll().stream()
                 // Filter rented rooms
                 .filter(accommodation -> !checkIsRented || !accommodation.getRented())
-
                 // Number of rooms
                 .filter(accommodation -> numberOfRooms == -1
                         || accommodation.getNumRooms() == numberOfRooms)
-
                 // Host country
                 .filter(accommodation -> hostCountry.equals("/")
                         || accommodation.getHost().getCountry().getName().equalsIgnoreCase(hostCountry))
-
                 // Category
-                .filter(accommodation ->  category.equals("/")
+                .filter(accommodation -> category.equals("/")
                         || accommodation.getCategory().name().equalsIgnoreCase(category))
                 .map(this::mapToResponse).collect(Collectors.toList());
-
 
         // Sorting
         String[] sorts = sortNameDate.split(",");
@@ -62,23 +62,22 @@ public class AccommodationService {
         accommodations.sort(comparator);
 
         // Manual Pagination
-        List<List<AccommodationDTO.Response>>ans = new ArrayList<>();
+        List<List<AccommodationDTO.Response>> ans = new ArrayList<>();
         List<AccommodationDTO.Response> page = new ArrayList<>();
 
-        for(AccommodationDTO.Response accommodation : accommodations) {
-            if(page.size() == pageSize){
+        for (AccommodationDTO.Response accommodation : accommodations) {
+            if (page.size() == pageSize) {
                 ans.add(page);
                 page = new ArrayList<>();
             }
             page.add(accommodation);
         }
 
-        if(!page.isEmpty() || ans.isEmpty()){
+        if (!page.isEmpty() || ans.isEmpty()) {
             ans.add(page);
         }
 
         accommodations = ans.get(getPage);
-
         return accommodations;
     }
 
@@ -124,15 +123,6 @@ public class AccommodationService {
         accommodationRepository.deleteById(id);
     }
 
-    public AccommodationDTO.Response markAsRented(Long id) {
-        Accommodation accommodation = accommodationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Accommodation not found with id: " + id));
-        accommodation.setRented(true);
-        // Optionally set condition to BAD? Not required, but you could.
-        Accommodation updated = accommodationRepository.save(accommodation);
-        return mapToResponse(updated);
-    }
-
     public AccommodationDTO.Response mapToResponse(Accommodation accommodation) {
         AccommodationDTO.Response response = new AccommodationDTO.Response();
         response.setId(accommodation.getId());
@@ -147,5 +137,37 @@ public class AccommodationService {
         HostDTO.Response hostResponse = hostService.mapToResponse(accommodation.getHost());
         response.setHost(hostResponse);
         return response;
+    }
+
+    @Transactional
+    public AccommodationDTO.Response markAsRented(Long id) {
+        Accommodation accommodation = accommodationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Accommodation not found with id: " + id));
+
+        if (accommodation.getNumRooms() <= 0) {
+            throw new IllegalStateException("No available rooms to rent");
+        }
+
+        // Decrease number of rooms by 1
+        accommodation.setNumRooms(accommodation.getNumRooms() - 1);
+
+        // If no rooms left, mark as fully rented
+        if (accommodation.getNumRooms() == 0) {
+            accommodation.setRented(true);
+        }
+
+        Accommodation updated = accommodationRepository.save(accommodation);
+
+        // Publish rental event
+        eventPublisher.publishEvent(new AccommodationRentedEvent(
+                this, updated.getId(), updated.getName(), updated.getNumRooms()));
+
+        // Publish fully booked event if applicable
+        if (updated.getNumRooms() == 0) {
+            eventPublisher.publishEvent(new AccommodationFullyBookedEvent(
+                    this, updated.getId(), updated.getName()));
+        }
+
+        return mapToResponse(updated);
     }
 }

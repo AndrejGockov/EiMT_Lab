@@ -1,20 +1,17 @@
 package com.example.lab_1.controller;
 
+import com.example.lab_1.model.domain.AccommodationDetailsView;
 import com.example.lab_1.model.dto.AccommodationDTO;
-import com.example.lab_1.model.enums.Category;
+import com.example.lab_1.model.projection.AccommodationDetailedProjection;
+import com.example.lab_1.model.projection.AccommodationSummaryProjection;
+import com.example.lab_1.repository.AccommodationDetailsViewRepository;
+import com.example.lab_1.repository.AccommodationRepository;
 import com.example.lab_1.service.AccommodationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -23,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccommodationController {
     private final AccommodationService accommodationService;
+    private final AccommodationRepository accommodationRepository;
 
     @GetMapping
     public List<AccommodationDTO.Response> getAllAccommodations() {
@@ -47,12 +45,20 @@ public class AccommodationController {
         return accommodationService.searchAccommodations(page, size, sortNameDate, category, hostCountry, numberOfRooms, hasRooms);
     }
 
-    private Sort parseSort(String sort) {
-        String[] parts = sort.split(",");
-        String field = parts[0];
-        Sort.Direction direction = (parts.length > 1 && parts[1].equalsIgnoreCase("desc"))
-                ? Sort.Direction.DESC : Sort.Direction.ASC;
-        return Sort.by(direction, field);
+    @GetMapping("/projection")
+    public ResponseEntity<List<AccommodationSummaryProjection>> projectionResponseEntity() {
+        List<AccommodationSummaryProjection> projections = accommodationRepository.findAllProjectedBy();
+        if (projections.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(projections);
+    }
+
+    @GetMapping("/detailed-projection/{id}")
+    public ResponseEntity<AccommodationDetailedProjection> detailedProjectionResponseEntity(@PathVariable Long id) {
+        return accommodationRepository.findProjectedById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/add")

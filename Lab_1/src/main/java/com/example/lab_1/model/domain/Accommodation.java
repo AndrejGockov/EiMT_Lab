@@ -16,6 +16,13 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+@NamedEntityGraph(name = "Accommodation.withHostAndCountry",
+        attributeNodes = {
+                @NamedAttributeNode(value = "host", subgraph = "hostCountry")
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "hostCountry", attributeNodes = @NamedAttributeNode("country"))
+        })
 public class Accommodation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
