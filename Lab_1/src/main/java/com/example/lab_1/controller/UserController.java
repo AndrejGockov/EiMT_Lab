@@ -1,6 +1,7 @@
 package com.example.lab_1.controller;
 
 import com.example.lab_1.model.domain.User;
+import com.example.lab_1.model.dto.RegisterUserDTO;
 import com.example.lab_1.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,15 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody RegisterUserDTO request) {
         try {
+            User user = new User();
+            user.setUsername(request.getUsername());
+            user.setEmail(request.getEmail());
+            user.setPassword(request.getPassword());
             User registered = userService.register(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(registered);
         } catch (Exception e) {
-            log.error("Registration error: ", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
