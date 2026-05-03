@@ -85,8 +85,10 @@ public class AccommodationService {
     // Lab 3 latest 10 accommodations that started working
     public List<AccommodationDTO.Response> latestAccommodations() {
         return getAllAccommodations().stream()
-                .filter(dto -> dto != null && dto.getWorkStartDate() != null)
-                .sorted(Comparator.comparing(AccommodationDTO.Response::getWorkStartDate).reversed())
+                .filter(dto -> dto != null
+                        && dto.getWorkStartDate() != null)
+                .sorted(Comparator.comparing(
+                        AccommodationDTO.Response::getWorkStartDate).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
     }
