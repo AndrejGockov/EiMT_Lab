@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,16 +24,19 @@ public class AccommodationController {
     private final AccommodationRepository accommodationRepository;
 
     @GetMapping
+    @   PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<AccommodationDTO.Response> getAllAccommodations() {
         return accommodationService.getAllAccommodations();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccommodationDTO.Response> getAccommodationById(@PathVariable Long id) {
         return ResponseEntity.ok(accommodationService.getAccommodationById(id));
     }
 
     @GetMapping("/results")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<AccommodationDTO.Response> searchAccomodation(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
@@ -46,6 +50,7 @@ public class AccommodationController {
     }
 
     @GetMapping("/projection")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<AccommodationSummaryProjection>> projectionResponseEntity() {
         List<AccommodationSummaryProjection> projections = accommodationRepository.findAllProjectedBy();
         if (projections.isEmpty()) {
@@ -55,6 +60,7 @@ public class AccommodationController {
     }
 
     @GetMapping("/detailed-projection/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AccommodationDetailedProjection> detailedProjectionResponseEntity(@PathVariable Long id) {
         return accommodationRepository.findProjectedById(id)
                 .map(ResponseEntity::ok)
@@ -63,21 +69,25 @@ public class AccommodationController {
 
     // Latest 10 accommodations
     @GetMapping("/latest")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<AccommodationDTO.Response> detailedProjectionResponseEntity() {
         return accommodationService.latestAccommodations();
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AccommodationDTO.Response> createAccommodation(@Valid @RequestBody AccommodationDTO.Request request) {
         return new ResponseEntity<>(accommodationService.createAccommodation(request), HttpStatus.CREATED);
     }
 
     @PostMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AccommodationDTO.Response> updateAccommodation(@PathVariable Long id, @Valid @RequestBody AccommodationDTO.Request request) {
         return ResponseEntity.ok(accommodationService.updateAccommodation(id, request));
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAccommodation(@PathVariable Long id) {
         accommodationService.deleteAccommodation(id);
         return ResponseEntity.noContent().build();

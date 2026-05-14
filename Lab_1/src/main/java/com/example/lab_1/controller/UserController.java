@@ -37,9 +37,9 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         try {
             String token = userService.login(credentials.get("username"), credentials.get("password"));
-            return ResponseEntity.ok(Map.of("token", token));
+            User user = userService.findByUsername(credentials.get("username")).orElseThrow();
+            return ResponseEntity.ok(Map.of("token", token, "role", user.getRole()));
         } catch (Exception e) {
-            log.error("Login error: ", e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
     }

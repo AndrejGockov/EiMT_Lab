@@ -12,6 +12,7 @@ export const useAuth = () => {
         try {
             const res = await authRepository.login(username, password);
             localStorage.setItem('token', res.data.token);
+            localStorage.setItem('role', res.data.role || 'USER'); // fallback
             navigate('/accommodations');
             return res.data;
         } catch (err: any) {
@@ -37,8 +38,12 @@ export const useAuth = () => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
         navigate('/login');
     };
 
-    return { login, register, logout, loading, error };
+    const getRole = () => localStorage.getItem('role');
+    const isAdmin = () => getRole() === 'ADMIN';
+
+    return { login, register, logout, loading, error, getRole, isAdmin };
 };

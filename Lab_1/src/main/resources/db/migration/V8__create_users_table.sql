@@ -15,3 +15,4 @@ alter table users add column role varchar(50) not null default 'USER';
 alter table users
     alter column created_at set default NOW(),
     alter column updated_at set default NOW();
+

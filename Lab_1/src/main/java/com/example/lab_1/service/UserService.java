@@ -47,7 +47,7 @@ public class UserService implements UserDetailsService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IncorrectPasswordException();
         }
-        return jwtUtil.generateToken(user.getUsername()); // returns only the token
+        return jwtUtil.generateToken(user.getUsername(), user.getRole());
     }
 
     @Override

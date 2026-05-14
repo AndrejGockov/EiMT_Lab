@@ -10,6 +10,7 @@ import CountriesPage from "./ui/pages/CountriesPage";
 import CountryDetailPage from "./ui/pages/CountryDetailPage";
 import LoginPage from "./ui/pages/LoginPage";
 import RegisterPage from "./ui/pages/RegisterPage";
+import PrivateRoute from "./ui/components/PrivateRouter";
 
 
 function App() {
@@ -18,12 +19,12 @@ function App() {
           <Routes>
               <Route path="/" element={<Layout />}>
                   <Route index element={<Index />} />
-                  <Route path="accommodations" element={<AccommodationsPage />} />
-                  <Route path="accommodations/:id" element={<AccommodationDetailPage />} />
-                  <Route path="hosts" element={<HostsPage />} />
-                  <Route path="hosts/:id" element={<HostDetailPage />} />
-                  <Route path="countries" element={<CountriesPage />} />
-                  <Route path="countries/:id" element={<CountryDetailPage />} />
+                  <Route path="accommodations" element={<PrivateRoute><AccommodationsPage /></PrivateRoute>} />
+                  <Route path="accommodations/:id" element={<PrivateRoute><AccommodationDetailPage /></PrivateRoute>} />
+                  <Route path="hosts" element={<PrivateRoute><HostsPage /></PrivateRoute>} />
+                  <Route path="hosts/:id" element={<PrivateRoute><HostDetailPage /></PrivateRoute>} />
+                  <Route path="countries" element={<PrivateRoute><CountriesPage /></PrivateRoute>} />
+                  <Route path="countries/:id" element={<PrivateRoute><CountryDetailPage /></PrivateRoute>} />
               </Route>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
