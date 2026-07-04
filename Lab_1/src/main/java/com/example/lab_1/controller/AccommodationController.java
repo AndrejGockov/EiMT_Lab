@@ -24,7 +24,7 @@ public class AccommodationController {
     private final AccommodationRepository accommodationRepository;
 
     @GetMapping
-    @   PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<AccommodationDTO.Response> getAllAccommodations() {
         return accommodationService.getAllAccommodations();
     }

@@ -11,6 +11,8 @@ import CountryDetailPage from "./ui/pages/CountryDetailPage";
 import LoginPage from "./ui/pages/LoginPage";
 import RegisterPage from "./ui/pages/RegisterPage";
 import PrivateRoute from "./ui/components/PrivateRouter";
+import UsersPage from "./ui/pages/UsersPage";
+import UserDetailPage from "./ui/pages/UserDetailPage";
 
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
           <Routes>
               <Route path="/" element={<Layout />}>
                   <Route index element={<Index />} />
+                  <Route path="users" element={<PrivateRoute><UsersPage /></PrivateRoute>} />
+                  <Route path="users/:id" element={<PrivateRoute><UserDetailPage /></PrivateRoute>} />
                   <Route path="accommodations" element={<PrivateRoute><AccommodationsPage /></PrivateRoute>} />
                   <Route path="accommodations/:id" element={<PrivateRoute><AccommodationDetailPage /></PrivateRoute>} />
                   <Route path="hosts" element={<PrivateRoute><HostsPage /></PrivateRoute>} />

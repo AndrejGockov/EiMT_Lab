@@ -14,6 +14,7 @@ export default function Header() {
                     Accommodation Rental
                 </Typography>
                 <Box>
+                    <Button color="inherit" component={Link} to="/users">Users</Button>
                     <Button color="inherit" component={Link} to="/accommodations">Accommodations</Button>
                     <Button color="inherit" component={Link} to="/hosts">Hosts</Button>
                     <Button color="inherit" component={Link} to="/countries">Countries</Button>
